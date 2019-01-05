@@ -1,3 +1,3 @@
 # AluraBank
 
-## A small trading simulation application for practicing typescript
+## A small trading simulation application for practice typescript
