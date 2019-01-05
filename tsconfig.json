@@ -3,6 +3,7 @@
       "target": "es6",
       "outDir": "app/js",
       "noEmitOnError": true,
+      "noImplicitAny": true,
   },
   "include": [
       "app/ts/**/*"
