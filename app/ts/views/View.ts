@@ -9,6 +9,8 @@ export abstract class View<T>{
   }
 
   update(model: T): void{
+
+    
     this._elemento.innerHTML = this.template(model);
   }
 

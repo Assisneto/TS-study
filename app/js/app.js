@@ -13,6 +13,9 @@ System.register(["./controllers/NegociacaoController"], function (exports_1, con
             document
                 .querySelector('.form')
                 .addEventListener('submit', controller.adiciona);
+            document
+                .querySelector('#botao-importa')
+                .addEventListener('click', controller.importaDados);
         }
     };
 });

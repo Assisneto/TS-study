@@ -24,6 +24,26 @@ System.register(["../models/index", "../views/index"], function (exports_1, cont
                         this._negociacoesView.update(this._negociacoes);
                         this._mensagemView.update('Negociação adicionada com sucesso!!!');
                     };
+                    this.importaDados = () => {
+                        function isOK(res) {
+                            if (res.ok) {
+                                return res;
+                            }
+                            else {
+                                throw new Error(res.statusText);
+                            }
+                        }
+                        fetch('http://localhost:8080/dados')
+                            .then(res => isOK(res))
+                            .then(res => res.json())
+                            .then((dados) => {
+                            dados
+                                .map(dado => new index_1.Negociacao(new Date(), dado.vezes, dado.montante))
+                                .forEach(negociacao => this._negociacoes.adiciona(negociacao));
+                            this._negociacoesView.update(this._negociacoes);
+                        })
+                            .catch(err => console.log(err));
+                    };
                     this._inputData = document.querySelector('#data');
                     this._inputQuantidade = document.querySelector('#quantidade');
                     this._inputValor = document.querySelector('#valor');
