@@ -1,6 +1,6 @@
 import { Negociacao, Negociacoes } from "../models/index";
 import { MensagemView, NegociacoesView } from "../views/index";
-import { NegociacaoParcial } from "../models/NegociacaoParcial";
+import { NegociacaoAPI } from "../services/NegociacaoAPI";
 
 export class NegociacaoController {
   
@@ -10,12 +10,14 @@ export class NegociacaoController {
   private _negociacoes = new Negociacoes();
   private _negociacoesView = new NegociacoesView('#negociacoesView');
   private _mensagemView = new MensagemView('#mensagemView');
+  private _service = new NegociacaoAPI();
 
   constructor(){
     this._inputData       = <HTMLInputElement> document.querySelector('#data');
     this._inputQuantidade = <HTMLInputElement> document.querySelector('#quantidade');
     this._inputValor      = <HTMLInputElement> document.querySelector('#valor');
     this._negociacoesView.update(this._negociacoes);
+
   }
 
   adiciona = (event: Event):void =>{
@@ -42,18 +44,13 @@ export class NegociacaoController {
         throw new Error(res.statusText);
         
       }
-
     }
-
-    fetch('http://localhost:8080/dados')
-      .then(res => isOK(res))
-      .then(res => res.json())
-      .then((dados:NegociacaoParcial[]) => {
-        dados
-          .map(dado => new Negociacao(new Date(), dado.vezes, dado.montante))
-          .forEach(negociacao =>  this._negociacoes.adiciona(negociacao))
-        this._negociacoesView.update(this._negociacoes);
-      })
-      .catch(err => console.log(err))
+      this._service
+      .obterNegociacoes((isOK))
+      .then((negociacoes: Negociacao[] )=> {
+          negociacoes.forEach(negociacao => 
+              this._negociacoes.adiciona(negociacao));
+          this._negociacoesView.update(this._negociacoes);
+      });       
   }
 }

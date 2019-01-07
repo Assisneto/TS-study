@@ -1,6 +1,6 @@
-System.register(["../models/index", "../views/index"], function (exports_1, context_1) {
+System.register(["../models/index", "../views/index", "../services/NegociacaoAPI"], function (exports_1, context_1) {
     "use strict";
-    var index_1, index_2, NegociacaoController;
+    var index_1, index_2, NegociacaoAPI_1, NegociacaoController;
     var __moduleName = context_1 && context_1.id;
     return {
         setters: [
@@ -9,6 +9,9 @@ System.register(["../models/index", "../views/index"], function (exports_1, cont
             },
             function (index_2_1) {
                 index_2 = index_2_1;
+            },
+            function (NegociacaoAPI_1_1) {
+                NegociacaoAPI_1 = NegociacaoAPI_1_1;
             }
         ],
         execute: function () {
@@ -17,6 +20,7 @@ System.register(["../models/index", "../views/index"], function (exports_1, cont
                     this._negociacoes = new index_1.Negociacoes();
                     this._negociacoesView = new index_2.NegociacoesView('#negociacoesView');
                     this._mensagemView = new index_2.MensagemView('#mensagemView');
+                    this._service = new NegociacaoAPI_1.NegociacaoAPI();
                     this.adiciona = (event) => {
                         event.preventDefault();
                         const negociacao = new index_1.Negociacao(new Date(this._inputData.value.replace(/-/g, ',')), parseInt(this._inputQuantidade.value), parseFloat(this._inputValor.value));
@@ -33,16 +37,12 @@ System.register(["../models/index", "../views/index"], function (exports_1, cont
                                 throw new Error(res.statusText);
                             }
                         }
-                        fetch('http://localhost:8080/dados')
-                            .then(res => isOK(res))
-                            .then(res => res.json())
-                            .then((dados) => {
-                            dados
-                                .map(dado => new index_1.Negociacao(new Date(), dado.vezes, dado.montante))
-                                .forEach(negociacao => this._negociacoes.adiciona(negociacao));
+                        this._service
+                            .obterNegociacoes((isOK))
+                            .then((negociacoes) => {
+                            negociacoes.forEach(negociacao => this._negociacoes.adiciona(negociacao));
                             this._negociacoesView.update(this._negociacoes);
-                        })
-                            .catch(err => console.log(err));
+                        });
                     };
                     this._inputData = document.querySelector('#data');
                     this._inputQuantidade = document.querySelector('#quantidade');
